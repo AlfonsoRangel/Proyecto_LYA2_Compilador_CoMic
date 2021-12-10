@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor CoMic</title>
+    <link rel="stylesheet" type="text/css" href="RECURSOS/SemanticUI/semantic.min.css">
+    <link rel="stylesheet" href="RECURSOS/ICONOS/css/all.min.css">
+    <link rel="stylesheet" href="editor.css">
+
+    <script src = "RECURSOS/JQUERY/jquery-3.6.0.min.js" defer></script>
+    <script src = "RECURSOS/SemanticUI/semantic.min.js" defer></script>
+    <script src = "RECURSOS/FileSaver/FileSaver.js" defer></script>
+    <script src="editor.js" type="module" defer></script>
+</head>
+<body> 
+
+<!--=======================================================================
+                    MENU LATERAL PRINCIPAL
+===========================================================================-->
+<div id="menu_lateral_principal"  class="ui left sidebar">
+    <div class="itemLateral">
+        <i class="fas fa-plus-circle"></i>
+        <label> Nuevo </label>
+    </div>
+    <div class="itemLateral">
+        <i class="far fa-folder-open"></i>
+        <label> Abrir </label>
+    </div>
+    <div class="itemLateral">
+        <i class="far fa-save"></i>
+        <label> Guardar </label>
+    </div>
+    <div class="itemLateral">
+        <i class="fas fa-file-export"></i>
+        <label> Guardar Como </label>
+    </div>
+</div>
+
+<div id="div_principal"  class="pusher">
+        <!--=======================================================================
+                        ENCABEZADO DE LA PAGINA
+    ===========================================================================-->
+    <div class="div_encabezado">
+        <!-- BOTON MENU -->
+        <div id="boton_menu"  class="boton_icono">
+            <i class="fas fa-bars"></i>
+        </div>
+        <!-- LOGO Y NOMBRE DE LA PESTAÑA -->
+        <div class = "div_titulo">
+            <img src="RECURSOS/IMAGENES/logo.PNG">
+            <label> Editor </label>
+        </div>
+        <!-- ENLACES A OTRAS PAGINAS -->
+        <div class = "div_enlaces">
+            <label id="txt_enlaceInicio"
+            data-content="Ir a la pagina oficial de CoMic"  data-position="left center"> 
+                Inicio 
+            </label>
+            <a  id="link_inicio" class="enlaceOculto" target="_blank"
+                href="https://sites.google.com/view/proyectocomic/inicio?authuser=0">
+            </a>
+        </div>
+    </div>
+
+    
+    <!--=======================================================================
+                        CONTENIDO DE LA PAGINA
+    ===========================================================================-->
+    <div id="div_contenido"  class="div_contenido">
+
+        <!-- PANEL DE BOTONES PRINCIPALES -->
+        <div id="div_botones">
+            <!-- BOTON COMPILAR -->
+            <div id="boton_compilar" class="boton_contenido"  
+                data-content="Compilar"  data-position="right center">
+                <i class="fas fa-play"></i>
+            </div>
+            <!-- BOTON VER TABLA DE TOKENS -->
+            <div id="boton_tabla_tokens" class="boton_contenido"  
+                data-content="Ver tabla de Tokens"  data-position="right center">
+                <i class="fas fa-table"></i>
+            </div>
+            <!-- BOTON VER TABLA DE SIMBOLOS -->
+            <div id="boton_tabla_simbolos" class="boton_contenido"
+                data-content="Ver tabla de Simbolos"  data-position="right center">
+                <i class="fas fa-clipboard-list"></i>
+            </div>
+            <!-- BOTON EDITAR EDITOR
+            <div id="boton_editar_editor" class="boton_contenido" 
+                data-content="Editar Editor"  data-position="right center">
+                <i class="fas fa-pencil-alt"></i>
+            </div> -->
+            <!-- BOTON CONSOLA DE ERRORES -->
+            <div id="boton_consola_errores" class="boton_contenido"
+                data-content="Ver Consola de Errores"  data-position="right center">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+        </div>
+
+        <!-- DISEÑO DEL EDITOR -->
+        <div id="editorCompleto">
+            <div id="div_lineas" class="estiloEditor">
+                <label class="estiloEditor">1</label>
+            </div>
+            <div id="div_editor" class="estiloEditor" contenteditable="true"  spellcheck="false">
+            </div>
+            <!-- CONTENEDOR DE LOS BOTONES PARA CAMBIAR EL TAMAÑO DE LETRA -->
+            <div class="div_botonesEditor">
+                <div id="botonDecrementarLetra" class="botonEditor"
+                data-content="Disminuir el Tamaño de Letra"  data-position="top center">
+                    <i class="fas fa-minus-circle"></i>
+                </div>
+                <div id="botonAumentarLetra" class="botonEditor"
+                data-content="Aumentar el Tamaño de Letra"  data-position="top center">
+                    <i class="fas fa-plus-circle"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABLA DE TOKENS -->
+        <div id="menu_lateral_tablaTokens"  class="ui right sidebar">
+            <div class="titulo_tabla" > Tabla de Tokens </div>
+            
+            <div class="div_tabla_right">
+            <table class="ui striped table">
+                <thead>
+                    <tr class="center aligned">
+                        <th> Número de Linea </th>
+                        <th> Token </th>
+                        <th> Lexema </th>
+                    </tr>
+                </thead>
+                <tbody id="tabla_tokens">
+                    <tr class="center aligned">
+                        <td> 2 </td>
+                        <td> IDETIFICADOR  </td>
+                        <td> mi_variable  </td>
+                     </tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+        <div class="pusher">
+        </div> 
+        
+        <!-- TABLA DE SIMBOLOS -->
+        <div id="menu_lateral_tablaSimbolos"  class="ui right sidebar">
+            <div class="TS_header">
+                <div class="titulo_tabla" > Tabla de Simbolos </div>
+                <div id="boton_TS_cancelar" class="boton_modal_cancelar"> 
+                    <i class="fas fa-times"></i> 
+                </div>
+            </div>
+            
+            <div class="div_selector_TS">
+                <label> Ver tabla de </label>
+                <select id="combo_TS"  class="ui dropdown">
+                    <option value="v" selected> Variables </option>
+                    <option value="f"> Funciones </option>
+                    <option value="p"> Pines </option>
+                </select>
+            </div>
+
+            <div class="div_tabla_right">
+            <table class="ui striped table">
+                <thead>
+                    <tr id="TS_columnas"  class="center aligned">
+                        <th> Número de Linea </th>
+                        <th> Token </th>
+                        <th> Lexema </th>
+                    </tr>
+                </thead>
+                <tbody id="TS_renglones">
+                    <tr class="center aligned">
+                        <td> 2 </td>
+                        <td> IDETIFICADOR  </td>
+                        <td> mi_variable  </td>
+                     </tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+        <div class="pusher">
+        </div> 
+
+
+        <!-- CONSOLA DE ERRORES -->
+        <div id="menu_lateral_consolaErrores"  class="ui bottom sidebar"> 
+
+            <div class="TS_header">
+                <div class="titulo_tabla" > Consola de Errores </div>
+                <div id="boton_consolaE_cancelar" class="boton_modal_cancelar"> 
+                    <i class="fas fa-times"></i> 
+                </div>
+            </div> 
+
+
+            <div class="div_tabla">
+            <table  class="ui striped table">
+                <thead>
+                    <tr class="center aligned">
+                        <th> Tipo de Error </th>
+                        <th> Número de Linea </th>
+                        <th> Descripción </th>
+                        <th> Sugerencia </th>
+                        <th> Proceso </th>
+                    </tr>
+                </thead>
+                <tbody id="tabla_consolaErrores">
+                    <!--<tr class="center aligned rowVerde">
+                        <td> Semantico </td>
+                        <td> 1956 </td>
+                        <td> El simbolo "%" no esta permitido  </td>
+                        <td> Consulta la documentación para ver los simbolos validos  </td>
+                        <td class="celda_icono"> <i class="far fa-file-code"></i> </td>
+                    </tr> -->
+                </tbody>
+            </table>
+            </div>
+
+        </div>
+        <div class="pusher">
+        </div> 
+    
+</div>
+
+
+
+
+<!--=======================================================================
+            VENTANA PROCESO LEXICO
+===========================================================================-->
+<div id="modal_lexico"  class="ui modal">
+    <div class="header">
+        <label> Proceso Lexico </label>
+        <div id="boton_modalLex_cancelar" class="boton_modal_cancelar"> 
+            <i class="fas fa-times"></i> 
+        </div>
+    </div>
+    <div class="content">
+        <!-- TABLA DE ENTRADA-->
+        <div class="div_entradaLexico">
+            <label> Entrada de Simbolos Restantes </label>
+            <div>
+                <table class="ui striped table">
+                    <tbody>
+                        <tr id="tabla_entradaLexico" class="center aligned">
+                            <td> a </td>
+                            <td> b </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- TABLA PASO A PASO -->
+        <div class="div_PasoAPasoLexico">
+            <label> Paso a Paso </label>
+            <div>
+            <table class="ui striped table">
+                <thead>
+                    <tr class="center aligned">
+                        <th> Simbolo a Evaluar </th>
+                        <th> Lexema Actual </th>
+                        <th> Estado Actual </th>
+                        <th> Siguiente Estado </th>
+                        <th> Lexema Resultante </th>
+                        <th class="columna_tokenEncontrado"> Token Encontrado </th>
+                    </tr>
+                </thead>
+                <tbody id="tabla_debugLexico">
+                    <tr class="center aligned rowVerde">
+                        <td> 's' </td>
+                        <td> 'wl' </td>
+                        <td> 156 </td>
+                        <td> 12 </td>
+                        <td> 'wls' </td>
+                        <td> PALABRA_RESERVADA 'Configuracion' </td>
+                    </tr>      
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!--=======================================================================
+            VENTANA PROCESO SINTACTICO
+===========================================================================-->
+<div id="modal_sintactico"  class="ui modal">
+    
+    <div class="header">
+        <label> Proceso Sintactico </label>
+        <div id="boton_modalSin_cancelar" class="boton_modal_cancelar"> 
+            <i class="fas fa-times"></i> 
+        </div>
+    </div>
+
+    <div class="content">
+        
+        <!-- CONTENEDOR DE LAS ENTRADAS Y EL PASO A PASO -->
+        <div class="div_col1_SinSem">
+
+            <!-- TABLA DE ENTRADA INICIAL -->
+            <div class="div_entrada_SinSem">
+            <label class="subtitulo_SinSem"> Entrada de Tokens inicial </label>
+            <div>
+                <table class="ui striped table">
+                    <tbody>
+                        <tr id="tabla_entradaI_sintactico" class="center aligned">
+                            <!--
+                            <td> 
+                                
+                                <div>
+                                    <label class="celda_token"> IDENTIFICADOR </label>
+                                    <label class="celda_lexema"> myvar </label>
+                                </div>  
+                            </td>  -->
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div>
+
+            <!-- TABLA DE ENTRADA FINAL -->
+            <div class="div_entrada_SinSem">
+            <label class="subtitulo_SinSem"> Entrada de Tokens Final </label>
+            <div>
+                <table class="ui striped table">
+                    <tbody>
+                        <tr id="tabla_entradaF_sintactico" class="center aligned">
+                            <!--
+                            <td> 
+                                <div>
+                                    <label class="celda_token"> IDENTIFICADOR </label>
+                                    <label class="celda_lexema"> myvar </label>
+                                </div>
+                            </td> -->
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div>
+
+            <!-- TABLA PASO A PASO -->
+            <div class="tabla_pasoApaso_SinSem">
+            <label class="subtitulo_SinSem"> Paso a Paso </label>
+            <div>
+                <table class="ui striped table">
+                    <thead>
+                        <tr class="center aligned">
+                            <th> Movimiento Realizado </th>
+                            <th> Error Encontrado </th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla_debugSintactico">
+                        <!--
+                        <tr class="center aligned">
+                            <td> Remover el token de la entrada </td>
+                            <td> Secuencia inesperada 'wqa' en la sintaxis: IDENTIFICADOR </td>
+                        </tr>      -->   
+                    </tbody>
+                </table>
+            </div>
+            </div>
+        
+        </div>
+        
+        <!-- CONTENEDOR DE LAS PILAS -->
+        <div class="div_col2_SinSem">
+
+            <!-- PILA INICIAL -->
+            <div class="tabla_pila_SinSem">
+                <label class="subtitulo_SinSem"> Pila Inicial </label>
+                <div>
+                    <table class="ui striped table">
+                        <tbody id="tabla_pilaI_sintactico">
+                            <!--
+                            <tr class="center aligned">
+                                <td> 
+                                    <div>
+                                        <label class="celda_token"> IDENTIFICADOR </label>
+                                        <label class="celda_lexema"> my_lexema </label>
+                                    </div>
+                                </td>
+                            </tr>  -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PILA FINAL -->
+            <div class="tabla_pila_SinSem">
+                <label class="subtitulo_SinSem"> Pila Final </label>
+                <div>
+                    <table class="ui striped table">
+                        <tbody id="tabla_pilaF_sintactico">
+                            <!--
+                            <tr class="center aligned">
+                                <td> 
+                                    <div>
+                                        <label class="celda_token"> IDENTIFICADOR </label>
+                                        <label class="celda_lexema"> my_lexema </label>
+                                    </div>
+                                </td>
+                            </tr>  -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>  <!-- FIN CONTENT -->
+</div>
+
+
+
+
+
+
+
+<!--=======================================================================
+            VENTANA PROCESO SEMANTICO
+===========================================================================-->
+<div id="modal_semantico"  class="ui modal">
+    
+    <div class="header">
+        <label> Proceso Semantico </label>
+        <div id="boton_modalSem_cancelar" class="boton_modal_cancelar"> 
+            <i class="fas fa-times"></i> 
+        </div>
+    </div>
+ 
+    <div id="contenido_modal_semantico" class="content">
+    <div class="div_col3_SinSem">
+        
+        <!-- CONTENEDOR DE LAS ENTRADAS Y EL PASO A PASO -->
+        <div class="div_col1_SinSem">
+
+            <!-- TABLA DE ENTRADA INICIAL -->
+            <div class="div_entrada_SinSem">
+            <label class="subtitulo_SinSem"> Entrada de Tokens inicial </label>
+            <div>
+                <table class="ui striped table">
+                    <tbody>
+                        <tr id="tabla_entradaI_semantico" class="center aligned">
+                            <!--
+                            <td> 
+                                
+                                <div>
+                                    <label class="celda_token"> IDENTIFICADOR </label>
+                                    <label class="celda_lexema"> myvar </label>
+                                </div>  
+                            </td>  -->
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div>
+
+            <!-- TABLA DE ENTRADA FINAL -->
+            <div class="div_entrada_SinSem">
+            <label class="subtitulo_SinSem"> Entrada de Tokens Final </label>
+            <div>
+                <table class="ui striped table">
+                    <tbody>
+                        <tr id="tabla_entradaF_semantico" class="center aligned">
+                            <!--
+                            <td> 
+                                <div>
+                                    <label class="celda_token"> IDENTIFICADOR </label>
+                                    <label class="celda_lexema"> myvar </label>
+                                </div>
+                            </td> -->
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div>
+
+            <!-- TABLA PASO A PASO -->
+            <div class="tabla_pasoApaso_SinSem">
+            <label class="subtitulo_SinSem"> Paso a Paso </label>
+            <div>
+                <table class="ui striped table">
+                    <thead>
+                        <tr class="center aligned">
+                            <th> Movimiento Realizado </th>
+                            <th> Accion Semantica </th>
+                            <th> Error Encontrado </th>
+                            <th> Ver Tablas </th>
+                            <th> Ver Arbol </th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla_debugSemantico">
+                        <!--
+                        <tr class="center aligned">
+                            <td> Remover el token de la entrada </td>
+                            <td> Secuencia inesperada 'wqa' en la sintaxis: IDENTIFICADOR </td>
+                        </tr>      -->   
+                    </tbody>
+                </table>
+            </div>
+            </div>
+        
+        </div>
+        
+        <!-- CONTENEDOR DE LAS PILAS -->
+        <div class="div_col2_SinSem">
+
+            <!-- PILA INICIAL -->
+            <div class="tabla_pila_SinSem">
+                <label class="subtitulo_SinSem"> Pila Inicial </label>
+                <div>
+                    <table class="ui striped table">
+                        <tbody id="tabla_pilaI_semantico">
+                            <!--
+                            <tr class="center aligned">
+                                <td> 
+                                    <div>
+                                        <label class="celda_token"> IDENTIFICADOR </label>
+                                        <label class="celda_lexema"> my_lexema </label>
+                                    </div>
+                                </td>
+                            </tr>  -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PILA FINAL -->
+            <div class="tabla_pila_SinSem">
+                <label class="subtitulo_SinSem"> Pila Final </label>
+                <div>
+                    <table class="ui striped table">
+                        <tbody id="tabla_pilaF_semantico">
+                            <!--
+                            <tr class="center aligned">
+                                <td> 
+                                    <div>
+                                        <label class="celda_token"> IDENTIFICADOR </label>
+                                        <label class="celda_lexema"> my_lexema </label>
+                                    </div>
+                                </td>
+                            </tr>  -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    </div>  <!-- FIN CONTENT -->
+</div>
+
+
+
+
+
+<!--=======================================================================
+            VENTANA PROCESO GENERACION DE CODIGO INTERMEDIO
+===========================================================================-->
+<div id="modal_codIntermedio"  class="ui modal">
+    
+    <div class="header">
+        <label> Proceso Generacion de Codigo Intermedio </label>
+        <div id="boton_modalCod_cancelar" class="boton_modal_cancelar"> 
+            <i class="fas fa-times"></i> 
+        </div>
+    </div>
+ 
+    <div id="contenido_modal_codigo" class="content">
+    <div>
+        <!-- TABLA DE INSTRUCCIONES -->
+        <div class="tabla_instrucciones">
+            
+            <!-- ENCABEZADO -->
+            <div class="header_tabla">
+                <div class ="columna_completa header_celda"> Instrucciones </div>
+            </div>
+            
+            <!-- CUERPO -->
+            <div id="codIntermedio_tablaInstruccion"  class="body_tabla">
+                <!-- DATOS -->
+                <div class="row_tabla"> 
+                    <div class="columna_completa dato_celda2"> Entero sensor = 12; </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ICONO FLECHA -->
+        <div class="icono_flecha">
+            <i class="fas fa-arrow-right"></i>
+        </div>
+
+        <!-- TABLA DE CUADRUPLOS -->
+        <div class="tabla_cuadruplos">
+            <!-- ENCABEZADO -->
+            <div class="header_tabla"> 
+                <div class ="columna_operador header_celda"> Operador </div>
+                <div class ="columna_operando1 header_celda"> Operando 1 </div>
+                <div class ="columna_operando2 header_celda"> Operando2  </div>
+                <div class ="columna_resultado header_celda"> Resultado </div>
+            </div>
+
+            <!-- CUERPO -->
+            <div id="codIntermedio_tablaCuadruplos"  class="body_tabla">
+                <!-- DATOS -->
+                <div class="row_tabla"> 
+                    <div class="columna_operador dato_celda"> + </div>
+                    <div class="columna_operando1 dato_celda"> R1 </div>
+                    <div class="columna_operando2 dato_celda"> 12 </div>
+                    <div class="columna_resultado dato_celda"> NV1 </div>
+                </div>    
+            </div>
+        </div>
+    </div>
+    </div>  <!-- FIN CONTENT -->
+</div>
+
+
+
+
+
+<!--=======================================================================
+        VENTANA PROCESO GENERACION DE CODIGO INTERMEDIO OPTIMIZADO
+===========================================================================-->
+<div id="modal_codIntermedioOp"  class="ui modal">
+    
+    <div class="header">
+        <input type="text" />
+        <div class="div_selector_CodigoOp">
+            <select id="combo_InstruccionCodOp"  class="ui dropdown">
+                <option value="eje1" selected> Entero a = 23; </option>
+                <option value="eje2"> Si( f == Verdadero ){ ... } ................................................. </option>
+                <option value="eje3"> leer( motor2 ); </option>
+            </select>
+        </div>
+        <label> Proceso Generacion de Codigo Intermedio Optimizado </label>
+        <div id="boton_modalCodOp_cancelar" class="boton_modal_cancelar"> 
+            <i class="fas fa-times"></i> 
+        </div>
+    </div>
+ 
+    <div id="contenido_modal_codigoOp" class="content">
+    <div>
+        <!-- TABLA DE CUADRUPLOS ORIGINALES -->
+        <div class="tabla_cuadruplos">
+            <label class="titulo_tabla"> Codigo Intermedio Original </label>
+            <!-- ENCABEZADO -->
+            <div class="header_tabla"> 
+                <div class ="columna_operador header_celda"> Operador </div>
+                <div class ="columna_operando1 header_celda"> Operando 1 </div>
+                <div class ="columna_operando2 header_celda"> Operando2  </div>
+                <div class ="columna_resultado header_celda"> Resultado </div>
+            </div>
+
+            <!-- CUERPO -->
+            <div id="codIntermedioOp_tablaOriginal"  class="body_tabla">
+                <!-- DATOS -->
+                <div class="row_tabla"> 
+                    <div class="columna_operador dato_celda"> + </div>
+                    <div class="columna_operando1 dato_celda"> R1 </div>
+                    <div class="columna_operando2 dato_celda"> 12 </div>
+                    <div class="columna_resultado dato_celda"> NV1 </div>
+                </div>    
+            </div>
+        </div>
+
+        <!-- ICONO FLECHA -->
+        <div class="icono_flecha">
+            <i class="fas fa-arrow-right"></i>
+        </div>
+
+        <!-- TABLA DE CUADRUPLOS OPTIMIZADOS -->
+        <div class="tabla_cuadruplos">
+            <label class="titulo_tabla"> Codigo Intermedio Optimizado </label>
+            <!-- ENCABEZADO -->
+            <div class="header_tabla"> 
+                <div class ="columna_operador header_celda"> Operador </div>
+                <div class ="columna_operando1 header_celda"> Operando 1 </div>
+                <div class ="columna_operando2 header_celda"> Operando2  </div>
+                <div class ="columna_resultado header_celda"> Resultado </div>
+            </div>
+
+            <!-- CUERPO -->
+            <div id="codIntermedioOp_tablaOp"  class="body_tabla">
+                <!-- DATOS -->
+                <div class="row_tabla"> 
+                    <div class="columna_operador dato_celda"> + </div>
+                    <div class="columna_operando1 dato_celda"> R1 </div>
+                    <div class="columna_operando2 dato_celda"> 12 </div>
+                    <div class="columna_resultado dato_celda"> NV1 </div>
+                </div>    
+            </div>
+        </div>
+    </div>
+    </div>  <!-- FIN CONTENT -->
+</div>
+
+
+
+
+
+
+<!--=======================================================================
+        VENTANA PROCESO GENERACION DE CODIGO OBJETO
+===========================================================================-->
+<div id="modal_debugCodigoArduino"  class="ui modal">
+    
+    <div class="header">
+        <input type="text" />
+        <div class="div_selector_CodigoObjeto">
+            <select id="combo_InstruccionCodObjeto"  class="ui dropdown">
+                <option value="eje1" selected> Entero a = 23; </option>
+                <option value="eje2"> Si( f == Verdadero ){ ... } </option>
+                <option value="eje3"> leer( motor2 ); </option>
+            </select>
+        </div>
+        <label> Proceso Generacion de Codigo Objeto </label>
+        <div id="boton_modalCodObjeto_cancelar" class="boton_modal_cancelar"> 
+            <i class="fas fa-times"></i> 
+        </div>
+    </div>
+ 
+    <div id="contenido_modal_codigoObjeto" class="content">
+    <div>
+
+        <!-- TABLA DE CUADRUPLOS OPTIMIZADOS -->
+        <div class="tabla_cuadruplos">
+            <label class="titulo_tabla"> Codigo Intermedio Optimizado </label>
+            <!-- ENCABEZADO -->
+            <div class="header_tabla"> 
+                <div class ="columna_operador header_celda"> Operador </div>
+                <div class ="columna_operando1 header_celda"> Operando 1 </div>
+                <div class ="columna_operando2 header_celda"> Operando 2  </div>
+                <div class ="columna_resultado header_celda"> Resultado </div>
+            </div>
+
+            <!-- CUERPO -->
+            <div id="codObjeto_tablaCodOptimizado"  class="body_tabla">
+                <!-- DATOS -->
+                <div class="row_tabla"> 
+                    <div class="columna_operador dato_celda"> + </div>
+                    <div class="columna_operando1 dato_celda"> R1 </div>
+                    <div class="columna_operando2 dato_celda"> 12 </div>
+                    <div class="columna_resultado dato_celda"> NV1 </div>
+                </div>    
+            </div>
+        </div>
+
+        <!-- ICONO FLECHA -->
+        <div class="icono_flecha">
+            <i class="fas fa-arrow-right"></i>
+        </div>
+
+        <!-- TABLA DE CODIGO ARDUINO -->
+        <div class="tabla_arduino">
+            
+            <label class="titulo_tabla"> Conversion en Codigo Arduino </label>
+            <!-- ENCABEZADO -->
+            <div class="header_tabla"> 
+                <div class ="columna_clave header_celda"> Clave </div>
+                <div class ="columna_codigo header_celda"> Codigo </div>
+            </div>
+            
+            <!-- CUERPO -->
+            <div id="codObjeto_tablaArduino"  class="body_tabla">
+                <!-- DATOS -->
+                <div class="row_tabla"> 
+                    <div class="columna_clave dato_celda"> NV13 </div>
+                    <div class="columna_codigo dato_celda"> int sensor = 12; </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    </div>  <!-- FIN CONTENT -->
+</div>
+
+
+
+
+
+
+<!--=======================================================================
+        VENTANA DE CODIGO OBJETO FINAL
+===========================================================================-->
+<div id="modal_codigoArduino"  class="ui modal">
+    
+    <div class="header">
+        <!-- BOTON DESCARGAR -->
+        <div id="boton_descargarCodigo"  
+            data-content="Descargar Codigo Arduino"  
+            data-position="bottom center"> 
+            
+            <i class="fas fa-file-download"></i> 
+        </div>
+        <!-- TITULO -->
+        <label> Codigo Objeto Generado </label>
+        <!-- BOTON CANCELAR -->
+        <div id="boton_modalCodAr_cancelar" class="boton_modal_cancelar"> 
+            <i class="fas fa-times"></i> 
+        </div>
+    </div>
+  
+    <div id="contenido_modal_codAr" class="content">
+    <div>
+        <!-- CODIGO COMIC -->
+        <div class="divCodigo divCOMIC">
+            <label> Codigo CoMic </label>
+            <div id="div_codigoCoMic" class="txtCodigo estiloCodigo"></div>
+        </div>
+
+        <!-- ICONO FLECHA -->
+        <div class="icono_flecha">
+            <i class="fas fa-arrow-right"></i>
+        </div>
+
+        <!-- CODIGO ARDUINO -->
+        <div class="divCodigo">
+            <label> Codigo Arduino </label>
+            <div id="div_codigoArduino"  class="txtCodigo"></div>
+        </div>
+    </div>
+    </div>  <!-- FIN CONTENT -->
+</div>
+
+
+
+
+
+
+
+<!--=======================================================================
+            VENTANA CARGANDO
+===========================================================================-->
+<div id="modal_cargando"  class="ui modal">
+    <div class="contenido">
+        <div class="ui active centered inline loader"></div>
+        <label> Analizando </label>
+    </div>
+</div>
+
+ 
+
+
+
+<!--=======================================================================
+            VENTANA PARA UNA COMPILACION CORRECTA
+===========================================================================-->
+<div id="modal_compilacionOK"  class="ui modal"> 
+    
+    <div class="header">
+        <!-- BOTON VER CODIGO OBJETO GENERADO -->
+        <div id="boton_codigoObjeto" class="boton_contenido"
+            data-content="Ver Codigo Objeto Generado"  data-position="right center">
+            <i class="fas fa-code"></i>
+        </div>
+        <!-- TITULO -->
+        <label> Que proceso desea ver? </label>
+        <!-- BOTON CANCELAR -->
+        <div id="boton_modalCompOK_cancelar" class="boton_modal_cancelar"> 
+            <i class="fas fa-times"></i> 
+        </div>
+    </div>
+    
+    <div class="content">
+    <div>
+        <div id="botonLex_compilacionOK"> Analisis Lexico </div>
+        <div id="botonSin_compilacionOK"> Analisis Sintactico </div>
+        <div id="botonSem_compilacionOK"> Analisis Semantico </div>
+        <div id="botonCod_compilacionOK"> Codigo Intermedio </div>
+        <div id="botonCodOp_compilacionOK"> Codigo Intermedio Optimizado </div>
+        <div id="botonCodObj_compilacionOK"> Codigo Objeto </div>
+    </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<!--=======================================================================
+            PANEL LATERAL PARA VER PROCESO ARBOL DE EXPRESION
+===========================================================================-->
+<div id="menu_lateral_arbol"  class="ui right sidebar"> 
+    
+    <!-- TITULO DEL PANEL LATERAL -->
+    <div class="Arbol_header">
+        <div class="titulo_tabla" > Arbol de Expresion </div>
+        <div id="boton_arbol_cancelar" class="boton_modal_cancelar"> 
+            <i class="fas fa-times"></i> 
+        </div>
+    </div>
+    
+    <!-- HEADER DE LOS TABS -->    
+    <div class="ui top attached tabular menu">
+        <a class="item active" data-tab="arbol1"> Creacion del Arbol </a>
+        <a class="item" data-tab="arbol2"> Proceso de Comprobacion de Tipos </a>   
+    </div>
+
+    <!-- PESTAÑA 1 (CREACION DEL ARBOL) -->  
+    <div class="ui bottom attached tab segment active tabContenido arbolC" data-tab="arbol1">
+        
+        <div class="arbolCreacion">
+
+            <!-- TABLA DE EXPRESION DE ENTRADA -->
+            <div class="div_posfijo">
+            <label class="subtitulo"> Expresion a Evaluar </label>
+            <div>
+                <table class="ui striped table">
+                    <tbody>
+                        <tr id="tabla_expresion_arbol" class="center aligned">
+                            <!-- <td> 
+                                
+                                <div>
+                                    <label class="celda_token"> IDENTIFICADOR </label>
+                                    <label class="celda_lexema"> myvar </label>
+                                </div>  
+                            </td>    -->
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div>
+
+            <!-- TABLA DE NOTACION PREFIJA -->
+            <div class="div_posfijo">
+            <label class="subtitulo"> Notacion Prefija </label>
+            <div>
+                <table class="ui striped table">
+                    <tbody>
+                        <tr id="tabla_prefijo_arbol" class="center aligned">
+                            <!-- <td> 
+                                
+                                <div>
+                                    <label class="celda_token"> IDENTIFICADOR </label>
+                                    <label class="celda_lexema"> myvar </label>
+                                </div>  
+                            </td>  -->
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div>
+
+            <!-- GENERACION DEL ARBOL -->
+            <div id="div_arbol" class="ui styled fluid accordion">
+                <!--
+                <div class="active title txt_valor">
+                    <i class="dropdown icon"></i>
+                    Nivel 1
+                </div>
+
+                <div class="active content divArbol_contenido">
+
+                    <div class="accordion">
+                        <div class="active title txt_valor">
+                            <i class="dropdown icon"></i>
+                            Nivel 1A
+                        </div>
+                        <div class="active content divArbol_contenido">
+                            <div class="accordion">
+                                <div class="title txt_valor">
+                                    Nivel 1A-A
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="active title txt_valor">
+                            <i class="dropdown icon"></i>
+                            Nivel 1A
+                        </div>
+                        <div class="active content divArbol_contenido">
+            
+                            <div class="accordion">
+                                <div class="title txt_valor">
+                                    Nivel 1A-A
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                -->
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PESTAÑA 2 (PROCESO DE COMPROBACION) --> 
+    <div class="ui bottom attached tab segment tabContenido" data-tab="arbol2">
+      
+        <div class="arbolProceso">
+
+            <!-- CONTENEDOR DEL POSFIJO Y EL PASO A PASO -->
+            <div class="div_col1">
+
+                <!-- TABLA DE NOTACION POSFIJA -->
+                <div class="div_posfijo">
+                    <label class="subtitulo"> Recorrido Posfijo </label>
+                    <div>
+                        <table class="ui striped table">
+                            <tbody>
+                                <tr id="tabla_posfijo_arbol" class="center aligned">
+                                    <!-- <td> 
+                                        <div>
+                                            <label class="celda_token"> IDENTIFICADOR </label>
+                                            <label class="celda_lexema"> myvar </label>
+                                        </div>  
+                                    </td>  -->
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TABLA PASO A PASO -->
+                <div class="tabla_pasoApaso">
+            <label class="subtitulo"> Paso a Paso </label>
+            <div>
+                <table class="ui striped table">
+                    <thead>
+                        <tr class="center aligned">
+                            <th> Accion Realizada </th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla_debugArbol">
+                        <!-- <tr class="center aligned">
+                            <td> Remover el token de la entrada </td>
+                        </tr>  -->      
+                    </tbody>
+                </table>
+            </div>
+                </div>
+        
+            </div>
+        
+            <!-- CONTENEDOR DE LAS PILAS -->
+            <div class="div_col2">
+
+                <!-- PILA INICIAL -->
+                <div class="tabla_pila">
+                <label class="subtitulo"> Pila Inicial </label>
+                <div>
+                    <table class="ui striped table">
+                        <tbody id="tabla_pilaI_arbol">
+                            <!-- <tr class="center aligned">
+                                <td> 
+                                    <div>
+                                        <label class="celda_token"> IDENTIFICADOR </label>
+                                        <label class="celda_lexema"> my_lexema </label>
+                                    </div>
+                                </td>
+                            </tr> -->  
+                        </tbody>
+                    </table>
+                </div>
+                </div>
+
+                <!-- PILA FINAL -->
+                <div class="tabla_pila">
+                <label class="subtitulo"> Pila Final </label>
+                <div>
+                    <table class="ui striped table">
+                        <tbody id="tabla_pilaF_arbol">
+                            <!-- <tr class="center aligned">
+                                <td> 
+                                    <div>
+                                        <label class="celda_token"> IDENTIFICADOR </label>
+                                        <label class="celda_lexema"> my_lexema </label>
+                                    </div>
+                                </td>
+                            </tr>  -->
+                        </tbody>
+                    </table>
+                </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+      
+</div>
+<div class="pusher">
+</div>
+
+
+
+
+
+
+
+<!--===============================================================
+        POPUP PARA MOSTRAR LINEA UBICADA
+====================================================================-->
+<div id="popup_linea" class="ui popup">
+<div>
+    <label class="textoMensaje"> Ubicado en la linea </label>
+    <label id="popupLinea_textoNum" class="textoResaltado"> 13 </label>
+</div>
+</div>
+
+
+
+<!--===============================================================
+    POPUP PARA MOSTRAR DATOS ASOCIADOS A UN RESULTADO CUADRUPLO
+====================================================================-->
+<div id="popup_resultadoCuadruplo" class="ui popup">
+<div>
+    <div class="div_textoContenido">
+        <label class="textoTitulo"> Tipo de Resultado: </label>
+        <label id="popupResultado_tipo"  class="textoSubtitulo"> Nueva Variable </label>
+    </div>
+    <div class="div_textoContenido">
+        <label class="textoTitulo"> Bloque: </label>
+        <label id="popupResultado_bloque"  class="textoSubtitulo"> Entradas </label>
+    </div>
+    <div class="div_textoContenido">
+        <label class="textoTitulo"> Ambito: </label>
+        <label id="popupResultado_ambito"  class="textoSubtitulo"> 10 </label>
+    </div>
+    <div class="div_textoContenido">
+        <label class="textoTitulo"> Tipo de Dato: </label>
+        <label id="popupResultado_tipoDato"  class="textoSubtitulo"> Booleano </label>
+    </div>
+    <div class="div_textoContenido">
+        <label class="textoTitulo"> ID asociado: </label>
+        <label id="popupResultado_ID"  class="textoSubtitulo"> motor1 </label>
+    </div>
+    <div class="div_textoContenido">
+        <label class="textoTitulo"> Referencia GOTO: </label>
+        <label id="popupResultado_GOTO"  class="textoSubtitulo"> NV2 </label>
+    </div>
+    <div class="div_textoContenido">
+        <label class="textoTitulo"> Nombre del Bloque Funcion: </label>
+        <label id="popupResultado_funcion"  class="textoSubtitulo"> Giro </label>
+    </div>
+    <div class="div_textoContenido">
+        <label class="textoTitulo"> Llamada a Funcion: </label>
+        <label id="popupResultado_callFuncion"  class="textoSubtitulo"> Entero </label>
+    </div>
+</div>
+</div>
+
+
+</body>
+</html>
